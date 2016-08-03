@@ -1,0 +1,20 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "serverRPI.js",
+  "dependencies": {
+    "eddystone-beacon": "^1.0.6",
+    "express": "^4.14.0",
+    "fs": "0.0.2",
+    "my-local-ip": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
