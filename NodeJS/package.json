@@ -7,7 +7,10 @@
     "eddystone-beacon": "^1.0.6",
     "express": "^4.14.0",
     "fs": "0.0.2",
-    "my-local-ip": "^1.0.0"
+    "my-local-ip": "^1.0.0",
+    "q": "^1.4.1",
+    "rpi-gpio": "^0.7.0",
+    "solc": "^0.3.5"
   },
   "devDependencies": {},
   "scripts": {
@@ -17,4 +20,3 @@
   "author": "",
   "license": "ISC"
 }
-

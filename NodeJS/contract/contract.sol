@@ -1,25 +1,56 @@
-contract SatisfactionClient {
-/* Hash de "service après ventes " */
-bytes32 constant SUJET = 0x428dddc2ccc007e2a6251a8e2d9ff928061f5fc5f475a9a4e3a6d9ba8ddf4807;
-uint constant SEUILFAIBLE = 40;
-uint constant SEUILFORT = 80;
-string constant FAIBLE = "FAIBLE";
-string constant MOYEN = "MOYEN";
-string constant FORT = "FORT";
-uint nbClients = 0;
-uint satisfaction = 0;
-mapping(address => bool) aSoumis;
-function soumettreSatisfaction(uint s){
-if( aSoumis[msg.sender] || s<0 || s>100 ) throw;
-aSoumis[msg.sender] = true;
-satisfaction += s;
-nbClients += 1;
-}
-function satisfactionProduit() returns (uint256,string){
-uint256 taux = satisfaction/nbClients;
-if( taux < SEUILFAIBLE ) return (taux,FAIBLE);
-if( taux >= SEUILFORT )
-return (taux,FORT);
-else return (taux,MOYEN);
-}
+contract RentCar {
+    uint state;
+    address public user;
+    uint rate;
+    uint price;
+    struct Position {
+        uint x;
+        uint y;
+    }
+    Position pos;
+    event StateChanged(uint state);
+
+    function RentCar() {
+        rate = 200000;
+        state = 0;
+        StateChanged(state);
+    }
+
+    function RentMe() {
+        user = msg.sender;
+        state = 1;
+        StateChanged(state);
+    }
+
+    function getBalance(address user) returns(uint) {
+        return user.balance;
+    }
+
+    function GoTo(uint X, uint Y) returns(bool, uint) {
+        pos.x = X;
+        pos.y = Y;
+        price = (pos.x + pos.y) * rate;
+        if (user.balance > price) {
+            return (true, price);
+        } else {
+            throw;
+        }
+    }
+
+    function StopRent() {
+        state = 0;
+        StateChanged(state);
+    }
+
+    /*function SetState(uint s) returns(uint) {
+        state = s;
+        StateChanged(state);
+        return state;
+    }*/
+
+    function StartRent() {
+        uint timeNow = now;
+        state = 2;
+        StateChanged(state);
+    }
 }
