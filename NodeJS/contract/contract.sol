@@ -8,18 +8,18 @@ contract RentCar {
         uint y;
     }
     Position pos;
-    event StateChanged(uint state);
+    event OnStateChanged(uint state);
 
     function RentCar() {
         rate = 200000;
         state = 0;
-        StateChanged(state);
+        OnStateChanged(state);
     }
 
     function RentMe() {
         user = msg.sender;
         state = 1;
-        StateChanged(state);
+        OnStateChanged(state);
     }
 
     function getBalance(address user) returns(uint) {
@@ -39,7 +39,7 @@ contract RentCar {
 
     function StopRent() {
         state = 0;
-        StateChanged(state);
+        OnStateChanged(state);
     }
 
     /*function SetState(uint s) returns(uint) {
@@ -51,6 +51,6 @@ contract RentCar {
     function StartRent() {
         uint timeNow = now;
         state = 2;
-        StateChanged(state);
+        OnStateChanged(state);
     }
 }
