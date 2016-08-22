@@ -13,6 +13,7 @@ var gpio = require('rpi-gpio');
 var compiled, contract;
 var source = "";
 var pwdAccount = "raspberry";
+//var pwdAccount = "noeud2";
 
 // pin 11, 13, 15 : blue, green, red
 gpio.setup(11, gpio.DIR_OUT);
@@ -21,7 +22,47 @@ gpio.setup(15, gpio.DIR_OUT);
 
 // Solidity Contract
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
+//web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8546'));
 var account = web3.eth.accounts[0];
+
+var createdAtBlock = web3.eth.blockNumber;
+
+// listen for created log/event
+function OnCreated() {
+    var Created = web3.eth.filter({
+        topics: [null, '0x16bd7d60bc08217d2e78d09658610a9eb6de22df8b587fdca9e980fafc4ecfcc'],
+        fromBlock: createdAtBlock,
+        toBlock: 'latest'
+    });
+
+    Created.watch(function(error, log) {
+        if (!error) {
+            console.log('Contract created on ' + log.address);
+
+            contract.address = log.address;
+            server(contract);
+
+            // remove filter
+            Created.stopWatching();
+
+            // watch for the last next 12 blocks if the code is still at the address
+            var filter = web3.eth.filter('latest');
+            filter.watch(function(e, blockHash) {
+                if (!e) {
+                    var block = web3.eth.getBlock(blockHash);
+
+                    // check if contract stille exists, if show error to the user
+                    if ((block.number - createdAtBlock) < 12 &&
+                        web3.eth.getCode(contract.address).length <= 2) {
+                        console.log('The contract is gone!');
+                    } else if (block.number - createdAtBlock > 12) {
+                        filter.stopWatching();
+                    }
+                }
+            });
+        }
+    });
+}
 
 
 readSource().then(function() {
@@ -62,19 +103,26 @@ function initContract() {
     console.log('Compiled');
     for (var contractName in compiled.contracts) {
         console.log('account : ', account);
-        web3.eth.contract(JSON.parse(compiled.contracts[contractName].interface)).new({
+        var contractBase = web3.eth.contract(JSON.parse(compiled.contracts[contractName].interface));
+        // estimate gas
+        contractData = contractBase.new.getData({
+            data: '0x' + compiled.contracts[contractName].bytecode
+        });
+        var gasEstimate = web3.eth.estimateGas({
+            data: contractData
+        });
+        console.log("estimated gas : ", gasEstimate);
+        // init contract
+        contract = contractBase.new('0x16bd7d60bc08217d2e78d09658610a9eb6de22df8b587fdca9e980fafc4ecfcc', {
             from: web3.eth.accounts[0],
             data: '0x' + compiled.contracts[contractName].bytecode,
-            gas: 250000
-        }, function(err, contr) {
-            if (!err && contr.address) {
-                contract = contr;
-                console.log("contract deployed on:", contract.address);
-                server(contract);
-            }
+            gas: gasEstimate + 30000
         });
+        OnCreated();
     }
 }
+
+
 
 // http server on 8080 port
 function server(contract) {
@@ -99,7 +147,7 @@ function server(contract) {
     });
 
     app.get('/img', function(req, res) {
-        var img = fs.readFileSync('./image/*.jpg')
+        var img = fs.readFileSync('./image/img.jpg')
         res.writeHead(200, {
             "Content-Type": "image/jpeg"
         });
@@ -119,7 +167,6 @@ function server(contract) {
 
     // Watch events & gpio
     var cont = web3.eth.contract(contract.abi).at(contract.address);
-    console.log(cont);
     cont.OnStateChanged().watch(function(error, result) {
         switch (result.args.state.c[0]) {
             case 0:
@@ -136,9 +183,26 @@ function server(contract) {
                 break;
             case 2:
                 console.log('rouge');
+                var timeTravel = Math.floor((Math.random() * 25000) + 5000);
+                setTimeout(function() {
+                    console.log("Choupette valide");
+                    web3.personal.unlockAccount(account, pwdAccount, 60, function(err, result) {
+                        if (!err) {
+                            contract.ValidateTravel.sendTransaction({
+                                from: account
+                            });
+                        }
+                    });
+                }, timeTravel);
                 gpio.output(11, false);
                 gpio.output(13, false);
                 gpio.output(15, true);
+                break;
+            case 3:
+                console.log('bleu');
+                gpio.output(11, true);
+                gpio.output(13, false);
+                gpio.output(15, false);
                 break;
         }
     })

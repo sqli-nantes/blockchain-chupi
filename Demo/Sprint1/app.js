@@ -1,6 +1,3 @@
-var Web3 = require('web3');
-var web3 = new Web3;
-
 var contract, data, price;
 var optionsHttp = {
     host: "10.33.44.182",
@@ -118,22 +115,6 @@ $('.annuler').on('click', function() {
     })
 })
 */
-
-function unlockAccount() {
-    var deferred = Q.defer();
-    var bool = web3.personal.unlockAccount(account, 'noeud2', 360);
-    if (bool) {
-        deferred.resolve();
-        console.log("unlock account");
-    }
-    return deferred.promise;
-}
-
-function joinContract(abi, address) {
-    cont = web3.eth.contract(abi).at(address);
-    console.log("Added contract");
-    return cont;
-}
 
 function replace(chaine) {
     while (chaine.indexOf('"') != -1) {
