@@ -1,20 +1,25 @@
 contract RentCar {
     /* car's availability state */
-    uint state;
-    struct User {
-        address addr;
-        bool valid;
-    }
-    /* car and renter */
-    User public user;
-    User public car;
-    /* rate (price/distance) to calculate price */
+     uint state;
+     struct User {
+         address addr;
+         bool valid;
+     }
+     /* car and renter */
+     User public user;
+     User public car;
+     /* rate (price/distance) to calculate price */
     uint rate;
     uint price;
-    struct Position {
+    uint overpayment;
+    /* good payment flag */
+    bool validatedPaymt;
+
+    struct Position{
         uint x;
         uint y;
     }
+    /* bytes abi; */
     Position pos;
 
     /* events on the change of state, and contract creation */
@@ -23,13 +28,20 @@ contract RentCar {
 
     /* contructor */
     function RentCar(bytes32 identifier) {
+        overpayment = 0;
+        validatedPaymt = false;
         rate = 200000;
-        state = 0;
         car.addr = msg.sender;
         user.valid = false;
         car.valid = false;
-        OnStateChanged(state);
+        SetState(0);
         OnCreated(identifier);
+    }
+
+    modifier onlyUsers {
+        if (msg.sender != user.addr && msg.sender != car.addr)
+            throw;
+            _
     }
 
     /* first step : the user is identified to the car */
@@ -37,59 +49,96 @@ contract RentCar {
         /*if (state != 0)
             throw;*/
         user.addr = msg.sender;
-        state = 1;
-        OnStateChanged(state);
+        /* abi = msg.data; */
+        SetState(1);
     }
 
-    function getBalance(address user) returns(uint) {
-        return user.balance;
+    function GetBalance(address addr) returns (uint){
+        return addr.balance;
     }
 
-    /* the user is sending the destination coordinates */
-    function GoTo(uint X, uint Y) returns(bool, uint) {
+    /* the user is sending the destination coordinates
+       calculate price */
+    function GoTo(uint X, uint Y) {
         pos.x = X;
         pos.y = Y;
         price = (pos.x + pos.y) * rate;
-        if (user.addr.balance > price) {
-            return (true, price);
-        } else {
+        if (user.addr.balance < price) {
             throw;
         }
     }
 
+    /* return price */
+    function GetPrice() returns (uint){
+        return price;
+    }
+
     /* stop the rent process, return to "1" state */
-    function StopRent() {
-        if (msg.sender != user.addr && msg.sender != car.addr)
-            throw;
-        state = 0;
+    function StopRent() onlyUsers() {
+        SetState(0);
+    }
+
+    function SetState(uint s) private {
+        state = s;
         OnStateChanged(state);
     }
 
     /* the user paies the rent and state becomes "2" */
-    function StartRent() {
-        if (msg.sender != user.addr && msg.sender != car.addr)
+    function StartRent() onlyUsers() {
+        if(msg.value >= price){
+            if(msg.value!=price){
+             	overpayment = msg.value-price;
+                user.addr.send(overpayment);
+            }
+            validatedPaymt = true;
+            SetState(2);
+        }else{
+        	validatedPaymt = false;
             throw;
-        uint timeNow = now;
-        state = 2;
-        OnStateChanged(state);
+        }
     }
+
+
+    function check() returns(bytes32){
+    	if (validatedPaymt){
+    		if(overpayment==0){
+     			return 'C est ok';
+    		}else{
+    			return uintToBytes(overpayment);
+    		}
+    	}else{
+   			return 'Y a pas assez d argent';
+    	}
+    }
+
+    function uintToBytes(uint v) constant returns (bytes32 ret) {
+	    if (v == 0) {
+	        ret = '0';
+	    }
+	    else {
+	        while (v > 0) {
+	            ret = bytes32(uint(ret) / (2 ** 8));
+	            ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
+	            v /= 10;
+	        }
+	    }
+	    return ret;
+	  }
 
     /* user and car must validate the travel in order to do other actions
     "3" state = waiting the user validation */
-    function ValidateTravel() {
-        if  (msg.sender == user.addr && user.valid == false)
-            user.valid = true;
-        if  (msg.sender == car.addr && car.valid == false) {
-            car.valid = true;
-            state = 3;
-            OnStateChanged(3);
-        }
-        if  (msg.sender != car.addr && msg.sender != user.addr)
-            throw;
-        if  (user.valid == true && car.valid == true) {
+    function ValidateTravel() onlyUsers() {
+      if  (msg.sender == user.addr && user.valid == false)
+          user.valid = true;
+      if  (msg.sender == car.addr && car.valid == false) {
+          car.valid = true;
+          SetState(3);
+      }
+      if  (user.valid == true && car.valid == true) {
           user.valid = false;
           car.valid = false;
           StopRent();
-        }
+      }
     }
+
 }

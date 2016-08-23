@@ -24,8 +24,8 @@ gpio.setup(15, gpio.DIR_OUT);
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
 //web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8546'));
 var account = web3.eth.accounts[0];
-
 var createdAtBlock = web3.eth.blockNumber;
+;
 
 // listen for created log/event
 function OnCreated() {

@@ -63,9 +63,10 @@ app.get('/louer', function(req, res) {
 app.get('/goto', function(req, res) {
     var x = req.query.x;
     var y = req.query.y;
-    goTo = contract.GoTo.call(x, y);
-    var price = goTo[1].c[0];
-    console.log(price);
+    goTo = contract.GoTo.sendTransaction(x, y, {
+        from: account
+    });
+    var price = contract.GetPrice.call();
     res.writeHead(200, {
         "Content-Type": "application/json"
     });
