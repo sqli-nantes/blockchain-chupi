@@ -24,23 +24,26 @@ gpio.setup(15, gpio.DIR_OUT);
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
 //web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8546'));
 var account = web3.eth.accounts[0];
+var identifier = '0x16bd7d60bc08217d2e78d09658610a9eb6de22df8b587fdca9e980fafc4ecfcc';
 var createdAtBlock = web3.eth.blockNumber;
-;
+var Created = web3.eth.filter({
+    topics: [null, identifier],
+    fromBlock: createdAtBlock,
+    toBlock: 'latest'
+});
+OnCreated();
+
 
 // listen for created log/event
 function OnCreated() {
-    var Created = web3.eth.filter({
-        topics: [null, '0x16bd7d60bc08217d2e78d09658610a9eb6de22df8b587fdca9e980fafc4ecfcc'],
-        fromBlock: createdAtBlock,
-        toBlock: 'latest'
-    });
+
 
     Created.watch(function(error, log) {
         if (!error) {
             console.log('Contract created on ' + log.address);
 
             contract.address = log.address;
-            server(contract);
+            server();
 
             // remove filter
             Created.stopWatching();
@@ -101,6 +104,7 @@ function readSource() {
 // create a new contract instance (with promise)
 function initContract() {
     console.log('Compiled');
+
     for (var contractName in compiled.contracts) {
         console.log('account : ', account);
         var contractBase = web3.eth.contract(JSON.parse(compiled.contracts[contractName].interface));
@@ -113,19 +117,18 @@ function initContract() {
         });
         console.log("estimated gas : ", gasEstimate);
         // init contract
-        contract = contractBase.new('0x16bd7d60bc08217d2e78d09658610a9eb6de22df8b587fdca9e980fafc4ecfcc', {
+        contract = contractBase.new(identifier, {
             from: web3.eth.accounts[0],
             data: '0x' + compiled.contracts[contractName].bytecode,
             gas: gasEstimate + 30000
         });
-        OnCreated();
     }
 }
 
 
 
 // http server on 8080 port
-function server(contract) {
+function server() {
     console.log('server OK');
     // Server sur port 8080
     var app = express();

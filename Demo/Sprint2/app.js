@@ -53,11 +53,16 @@ function goto(pos) {
             y: ypos
         }).done(
         function(data) {
+          if (data == "error") {
+            document.getElementById('error').style.display = "inline";
+          } else {
             document.getElementById('prix').innerHTML = data;
             price = data;
             document.getElementById('4').style.display = "inline";
+            document.getElementById('error').style.display = "none";
             console.log(data);
             $('#go').prop('disabled', true);
+          }
         }
     );
 }

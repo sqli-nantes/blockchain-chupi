@@ -17,13 +17,13 @@
     <h1>Bonjour, je suis Jim !</h1>
     <div>
         Cette voiture se signale comme disponible.
-        <button type="button" class="btn btn-primary" id="scan">La scanner</button>
+        <button type="button" class="btn btn-primary" id="scan">Scanner</button>
         <hr>
     </div>
     <br>
     <div style="display:none" id="2">
         Cette voiture s'appelle <b id="nomVoiture">test</b>
-        <button type="button" class="btn btn-primary" id="louer">La louer</button>
+        <button type="button" class="btn btn-primary" id="louer">Louer</button>
         <button type="button" class="btn btn-default annuler">Annuler</button>
         <hr>
     </div>
@@ -38,6 +38,7 @@
             <br>
             <button type="button" id="go" class="btn btn-primary" onclick="goto(pos)">Go</button>
             <button type="button" class="btn btn-default annuler">Annuler</button>
+            <b style="color:red; display:none" id="error">Solde insuffisant</b>
         </form>
         <hr>
     </div>

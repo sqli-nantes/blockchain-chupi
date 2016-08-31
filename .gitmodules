@@ -1,0 +1,3 @@
+[submodule "NodeJS/test/dapple_packages/dappsys"]
+	path = NodeJS/test/dapple_packages/dappsys
+	url = https://github.com/nexusdev/dappsys

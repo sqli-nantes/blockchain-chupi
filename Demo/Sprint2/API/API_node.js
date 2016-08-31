@@ -63,14 +63,33 @@ app.get('/louer', function(req, res) {
 app.get('/goto', function(req, res) {
     var x = req.query.x;
     var y = req.query.y;
-    goTo = contract.GoTo.sendTransaction(x, y, {
-        from: account
-    });
-    var price = contract.GetPrice.call();
+    var price;
     res.writeHead(200, {
         "Content-Type": "application/json"
     });
-    res.end(JSON.stringify(price));
+
+    contract.GoTo.sendTransaction(x, y, {
+        from: account
+    }, function(err, result) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        txhash = result;
+        filter = web3.eth.filter('latest');
+        filter.watch(function(error, result) {
+            var receipt = web3.eth.getTransactionReceipt(txhash);
+            if (receipt && receipt.transactionHash == txhash) {
+              console.log(receipt.transactionHash);
+                filter.stopWatching();
+                price = contract.GetPrice.call();
+                if (price == 0) {
+                    price = "error";
+                }
+                res.end(JSON.stringify(price))
+            }
+        })
+    });
 });
 
 app.get('/goo', function(req, res) {
