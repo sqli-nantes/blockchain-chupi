@@ -1,0 +1,4 @@
+build
+
+*.sw*
+*.DS_Store

@@ -12,7 +12,11 @@ var compiled, contract;
 
 // Solidity Contract
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
+//web3.setProvider(new web3.providers.HttpProvider('http://10.33.44.182:8547'));
 var account = web3.eth.accounts[0];
+var pwd = 'noeud2';
+//var pwd = 'raspberry';
+
 
 var optionsHttp = {
     host: "10.33.44.182",
@@ -46,7 +50,7 @@ app.get('/louer', function(req, res) {
     var cont = req.query.contract;
     //  contract = joinContract(cont.abi, cont.address);
     contract = web3.eth.contract(JSON.parse(cont).abi).at(JSON.parse(cont).address);
-    web3.personal.unlockAccount(account, 'noeud2', 360);
+    web3.personal.unlockAccount(account, pwd, 360);
     Promise.denodeify(contract.RentMe.sendTransaction)({
         from: account
     }).then(function() {
@@ -80,7 +84,6 @@ app.get('/goto', function(req, res) {
         filter.watch(function(error, result) {
             var receipt = web3.eth.getTransactionReceipt(txhash);
             if (receipt && receipt.transactionHash == txhash) {
-              console.log(receipt.transactionHash);
                 filter.stopWatching();
                 price = contract.GetPrice.call();
                 if (price == 0) {
@@ -94,7 +97,7 @@ app.get('/goto', function(req, res) {
 
 app.get('/goo', function(req, res) {
     var price = req.query.price;
-    web3.personal.unlockAccount(account, 'noeud2', 60);
+    web3.personal.unlockAccount(account, pwd, 60);
     contract.StartRent.sendTransaction({
         from: account,
         value: price
@@ -106,7 +109,7 @@ app.get('/goo', function(req, res) {
 });
 
 app.get('/annuler', function(req, res) {
-    web3.personal.unlockAccount(account, 'noeud2', 60);
+    web3.personal.unlockAccount(account, pwd, 60);
     contract.StopRent.sendTransaction({
         from: account
     });
@@ -117,7 +120,7 @@ app.get('/annuler', function(req, res) {
 });
 
 app.get('/valide', function(req, res) {
-    web3.personal.unlockAccount(account, 'noeud2', 60);
+    web3.personal.unlockAccount(account, pwd, 60);
     contract.ValidateTravel.sendTransaction({
         from: account
     });
@@ -162,7 +165,7 @@ app.listen(8088);
 
 function unlockAccount() {
     var deferred = Q.defer();
-    var bool = web3.personal.unlockAccount(account, 'noeud2', 360);
+    var bool = web3.personal.unlockAccount(account, pwd, 360);
     if (bool) {
         deferred.resolve();
         console.log("unlock account");

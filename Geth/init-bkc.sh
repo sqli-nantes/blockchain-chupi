@@ -1,0 +1,1 @@
+./geth-1.5.0-unstable-599e3c7-linux-arm-7 --datadir ./node --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,net,web3,personal" --rpccorsdomain "*" console
