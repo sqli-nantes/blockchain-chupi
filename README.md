@@ -1,6 +1,8 @@
 # blockchain-xXx-RPI
 Décentralisation de la location de véhicule par la blockchain - Démo (partie raspberry pi)
 
+La partie RPI nécessite le lancement d'un noeud Geth et d'un JS, déployant le contrat sur la bkc ainsi qu'un serveur permettant à l'appli de récupérer les infos de choupette.
+
 ## Organisation et contenu
 ### geth/
 * geth-1.5.0-unstable-cc6170d-linux-arm-7 : *executable geth pour archi ARM*
@@ -41,3 +43,8 @@ Décentralisation de la location de véhicule par la blockchain - Démo (partie 
      
   * lancer les tests
      * truffle test
+
+### nodejs/
+JS déployant le contrat sur la bkc et un serveur permettant à l'appli de récupérer les infos de choupette.
+
+    npm start
