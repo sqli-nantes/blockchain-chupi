@@ -48,3 +48,8 @@ La partie RPI nécessite le lancement d'un noeud Geth et d'un JS, déployant le 
 JS déployant le contrat sur la bkc et un serveur permettant à l'appli de récupérer les infos de choupette.
 
     npm start
+
+### demo/
+    API node + web pour demo.
+    A lancer sur un ordi pour interagir avec le RPI.
+    Nécessite noeud geth (port : 8547)
