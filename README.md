@@ -1,55 +1,122 @@
 # blockchain-xXx-RPI
-Décentralisation de la location de véhicule par la blockchain - Démo (partie raspberry pi)
 
-La partie RPI nécessite le lancement d'un noeud Geth et d'un JS, déployant le contrat sur la bkc ainsi qu'un serveur permettant à l'appli de récupérer les infos de choupette.
+Ce répertoire contient une démonstration complète de la décentralisation d'une location d'un véhicule par la blockchain.
+Pour simuler un véhicule (CHOUPETTE), un Raspberry PI 3 est utilisé ainsi qu'une LED de couleur qui indique l'état du véhicule.. 
+Pour simuler l'application du client (JIM), une application web est utilisée.
 
-## Organisation et contenu
-### geth/
-* geth-1.5.0-unstable-cc6170d-linux-arm-7 : *executable geth pour archi ARM*
-* genesis.json
-* init-bkc.sh
-* run-bkc.sh
+Voici le scénario : 
 
-#### Initialisation de la blockchain
-    console : sh init-bkc.sh
-    (Penser à créer un compte)
+1. CHOUPETTE se prépare au transport de clients. Elle se met pour cela en mode *disponible* (LED de couleur **VERTE**) et diffuse son identité. 
+2. JIM s'approche de CHOUPETTE, "scan" le lieu, et découvre l'identité de CHOUPETTE ainsi que son état. Il décide ensuite de louer CHOUPETTE.
+3. CHOUPETTE met donc a jour son état en mode *"discussion avec un client"* (LED de couleur **ORANGE**). Elle lui demande son itinéraire.
+4. JIM saisit les coordonnées de sa destination, et les transmets à CHOUPETTE.
+5. CHOUPETTE calcul le prix de la course et l'envoi à JIM.
+6. JIM décide de payer et vire automatiquement l'argent.
+7. À la réception du paiement, CHOUPETTE met à jour son état en mode *indisponible* (LED de couleur **ROUGE**).
+8. À l'arrivée à destination, JIM confirme qu'il est bien arrivé puis attend la confirmation de CHOUPETTE.
+9. CHOUPETTE confirme également qu'elle est arrivée à la destination contractualisée puis passe en *disponible* (LED de couleur **VERTE**).
 
-#### Démarrer la blockchain
-    console : sh run-bkc.sh
+## Architecture
+### CHOUPETTE
 
-### geth/test/
-* test_dapple : http://dapple.readthedocs.io/en/master/
+CHOUPETTE est composée de 2 parties : 
 
-    Nécessite l'installation de dapple :
-    **npm install -g dapple**
+* Un client Ethereum (Geth) qui permet de communiquer avec le réseau, et d'intéragir avec les contrats et de synchroniser la blockchain,
+* Un serveur HTTP, qui permet d'exposer les informations relatives au service : 
+    * l'interface du *smart-contract*
+    * l'adresse du *smart-contract*
+    * des informations complémentaires pour l'évolution (constructeur, maintenance, énergie,...)
 
-  * initialiser projet
-     * mkdir my-dapp
-     * cd my-dapp
-     * dapple init
+#### Ports et adresses (temp)
+IP: **10.33.44.182**
 
-  * lancer les tests
-     * dapple test
+port réseau geth : **30301**
 
-* test_truffle : http://truffle.readthedocs.io/en/latest/
+port rpc geth : **8547**
 
-    Nécessite l'installation de truffle :
-    **npm install -g truffle**
+port serveur HTTP : **8080**
 
-  * initialiser projet
-     * mkdir myproject
-     * cd myproject
-     * truffle init
 
-  * lancer les tests
-     * truffle test
+### JIM
 
-### nodejs/
-JS déployant le contrat sur la bkc et un serveur permettant à l'appli de récupérer les infos de choupette.
+JIM comporte 3 parties : 
 
-    npm start
+* Un client Ethereum (GETH) identique à celui de CHOUPETTE, mais qui en plus sert de mineur dans le réseau *(Le mineur pourrait être n'importe quel autre noeud)*.
+* Un serveur HTTP qui expose du API REST pour communiquer entre l'application javascript et le client Ethereum. 
+* L'application Javascript qui s'exécute dans le navigateur.
 
-### demo/
-    API node + web pour demo.
-    A lancer sur un ordi pour interagir avec le RPI.
-    Nécessite noeud geth (port : 8547)
+#### Ports et adresses (temp)
+IP: **10.33.44.XXX**
+
+port réseau geth : **30301**
+
+port rpc geth : **8547**
+
+port serveur HTTP : **8088**
+
+
+## Organisation du contenu
+
+* ***geth/*** comporte les fichiers utiles à la mise en route du client Ethereum (genesis, commandes d'init,...).
+* ***nodejs/*** comporte les fichiers du serveur HTTP de CHOUPETTE
+* ***demo/*** comporte les fichiers du serveur HTTP de JIM et son application Javascript.
+
+## Lancement du scénario
+
+### JIM
+
+* Dans une console :
+``` 
+cd geth
+
+geth --datadir data/ --networkid "0x64" init genesis.json 
+
+geth --datadir data/ --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,net,web3,personal" --rpccorsdomain "*" console
+
+[...]
+> admin.nodeInfo.enode #Conserver cette valeur pour la suite
+> personal.newAccount("toto");
+> miner.start();
+
+```
+
+* Dans une seconde 
+```
+cd demo/API
+
+npm install
+
+npm start
+
+```
+
+* Ouvrir le fichier demo/demo.html dans un navigateur
+
+### CHOUPETTE
+
+--> Le Raspberry PI utilise le binaire GETH geth-1.5.0-unstable-cc6170d-linux-arm-7. <--
+
+* Dans un terminal
+``` 
+cd ~/geth 
+
+./geth-1.5.0-unstable-599e3c7-linux-arm-7 --datadir ./node/ --networkid "0x64" init genesis.json 
+
+./geth-1.5.0-unstable-599e3c7-linux-arm-7 --datadir ./node --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,miner,net,web3,personal" --rpccorsdomain "*" console
+
+[...]
+> admin.addPeer(" saisir ici la valeur conservée précédemment et remplacer [::] par l'IP du poste ")
+
+```
+
+* Dans un second
+```
+cd ~/nodejs 
+
+npm install
+
+npm start
+
+[...WAIT...]
+serverOK
+```
