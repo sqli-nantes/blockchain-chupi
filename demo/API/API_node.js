@@ -14,7 +14,7 @@ var compiled, contract;
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
 //web3.setProvider(new web3.providers.HttpProvider('http://10.33.44.182:8547'));
 var account = web3.eth.accounts[0];
-var pwd = 'noeud2';
+var pwd = 'toto';
 //var pwd = 'raspberry';
 
 
