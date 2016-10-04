@@ -41,7 +41,7 @@ contract RentCar {
     modifier onlyUsers {
         if (msg.sender != user.addr && msg.sender != car.addr)
             throw;
-            _
+            _;
     }
 
     /* first step : the user is identified to the car */
