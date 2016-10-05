@@ -28,14 +28,10 @@ CHOUPETTE est composée de 2 parties :
     * des informations complémentaires pour l'évolution (constructeur, maintenance, énergie,...)
 
 #### Ports et adresses (temp)
-IP: **10.33.44.182**
-
-port réseau geth : **30301**
-
-port rpc geth : **8547**
-
-port serveur HTTP : **8080**
-
+* IP: **10.33.44.182**
+* port réseau geth : **30301**
+* port rpc geth : **8547**
+* port serveur HTTP : **8080**
 
 ### JIM
 
@@ -46,13 +42,10 @@ JIM comporte 3 parties :
 * L'application Javascript qui s'exécute dans le navigateur.
 
 #### Ports et adresses (temp)
-IP: **10.33.44.XXX**
-
-port réseau geth : **30301**
-
-port rpc geth : **8547**
-
-port serveur HTTP : **8088**
+* IP: **10.33.44.XXX**
+* port réseau geth : **30301**
+* port rpc geth : **8547**
+* port serveur HTTP : **8088**
 
 
 ## Organisation du contenu
@@ -63,9 +56,8 @@ port serveur HTTP : **8088**
 
 ## Lancement du scénario
 
-### JIM
+### 1 - Lancer le client Ethereum de JIM (PC)
 
-* Dans une console :
 ``` 
 cd geth
 
@@ -76,27 +68,12 @@ geth --datadir data/ --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0"
 [...]
 > admin.nodeInfo.enode #Conserver cette valeur pour la suite
 > personal.newAccount("toto");
-> miner.start();
+> while(true){miner.start();admin.sleepBlocks(3);miner.stop();admin.sleep(10);}
 
 ```
 
-* Dans une seconde 
-```
-cd demo/API
+### 2 - Lancer le client Ethereum de Choupette (Raspberry PI)
 
-npm install
-
-npm start
-
-```
-
-* Ouvrir le fichier demo/demo.html dans un navigateur
-
-### CHOUPETTE
-
---> Le Raspberry PI utilise le binaire GETH geth-1.5.0-unstable-cc6170d-linux-arm-7. <--
-
-* Dans un terminal
 ``` 
 cd ~/geth 
 
@@ -105,11 +82,12 @@ cd ~/geth
 ./geth-1.5.0-unstable-599e3c7-linux-arm-7 --datadir ./node --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,miner,net,web3,personal" --rpccorsdomain "*" console
 
 [...]
-> admin.addPeer(" saisir ici la valeur conservée précédemment et remplacer [::] par l'IP du poste ")
+> admin.addPeer(" saisir ici la valeur conservée précédemment et remplacer [::] par l'IP de JIM ")
 
 ```
 
-* Dans un second
+### 3 - Lancer le script de déploiement du contrat et d'exposition d'informations (Raspberry PI)
+
 ```
 cd ~/nodejs 
 
@@ -120,3 +98,19 @@ npm start
 [...WAIT...]
 serverOK
 ```
+### 4 - Lancer l'application de JIM (PC)
+
+```
+cd nodejs/demo/API
+
+npm install
+
+npm start
+
+[...WAIT...]
+serverOK
+
+```
+Enfin, ouvrir le fichier demo/demo.html dans un navigateur
+
+
