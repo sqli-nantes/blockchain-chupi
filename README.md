@@ -33,6 +33,10 @@ CHOUPETTE est composée de 2 parties :
 * port rpc geth : **8547**
 * port serveur HTTP : **8080**
 
+#### Connection à Choupette (SSH)
+* id **ssh pi@10.33.44.182**
+* mdp **raspberry**
+
 ### JIM
 
 JIM comporte 3 parties : 
