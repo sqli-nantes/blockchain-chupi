@@ -12,8 +12,8 @@ var gpio = require('rpi-gpio');
 // params
 var compiled, contract;
 var source = "";
-//var pwdAccount = "raspberry";
-var pwdAccount = "noeud2";
+var pwdAccount = "raspberry";
+//var pwdAccount = "noeud2";
 
 // pin 11, 13, 15 : blue, green, red
 //gpio.setup(11, gpio.DIR_OUT);
