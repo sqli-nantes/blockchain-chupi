@@ -79,6 +79,7 @@ readSource().then(function() {
                 if (!err) {
                     console.log("Unlocked : ", result);
                     compiled = solc.compile(source, 1);
+
                     initContract();
                 }
             });
@@ -171,7 +172,9 @@ function server() {
     // Watch events & gpio
     var cont = web3.eth.contract(contract.abi).at(contract.address);
     cont.OnStateChanged().watch(function(error, result) {
-        switch (result.args.state.c[0]) {
+console.log("stateChanged");        
+console.log(result.args.state.c[0]);
+	switch (result.args.state.c[0]) {
             case 0:
                 console.log('vert');
                 gpio.output(11, false);
