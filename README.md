@@ -123,3 +123,11 @@ serverOK
 
 ```
 Enfin, ouvrir le fichier demo/demo.html dans un navigateur
+
+
+## TODO LIST
+
+* Résoudre le problème de synchronisation du client Geth du RPI
+* Externaliser la configuration du serverRPI.js dans un fichier
+
+
