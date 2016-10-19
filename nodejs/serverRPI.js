@@ -6,19 +6,18 @@ var solc = require('solc');
 var web3 = require('./utils/web3IPCExtension').web3;
 var Q = require('q');
 var gpio = require('rpi-gpio');
+var piblaster = require('pi-blaster.js');
 
+var RED_GPIO_PIN = 17;
+var GREEN_GPIO_PIN = 18;
+var BLUE_GPIO_PIN = 22;
 
 
 // params
 var compiled, contract;
 var source = "";
-var pwdAccount = "raspberry";
+var pwdAccount = "toto";
 //var pwdAccount = "noeud2";
-
-// pin 11, 13, 15 : blue, green, red
-//gpio.setup(11, gpio.DIR_OUT);
-//gpio.setup(13, gpio.DIR_OUT);
-//gpio.setup(15, gpio.DIR_OUT);
 
 // Solidity Contract
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
@@ -177,15 +176,15 @@ console.log(result.args.state.c[0]);
 	switch (result.args.state.c[0]) {
             case 0:
                 console.log('vert');
-                gpio.output(11, false);
-                gpio.output(13, true);
-                gpio.output(15, false);
+		piblaster.setPwm(RED_GPIO_PIN, 0);
+		piblaster.setPwm(GREEN_GPIO_PIN, 1);
+		piblaster.setPwm(BLUE_GPIO_PIN, 0);
                 break;
             case 1:
                 console.log('orange');
-                gpio.output(11, false);
-                gpio.output(13, true);
-                gpio.output(15, true);
+                piblaster.setPwm(RED_GPIO_PIN, 255);
+                piblaster.setPwm(GREEN_GPIO_PIN, 0.5);
+                piblaster.setPwm(BLUE_GPIO_PIN, 0);
                 break;
             case 2:
                 console.log('rouge');
@@ -200,15 +199,15 @@ console.log(result.args.state.c[0]);
                         }
                     });
                 }, timeTravel);
-                gpio.output(11, false);
-                gpio.output(13, false);
-                gpio.output(15, true);
-                break;
+                piblaster.setPwm(RED_GPIO_PIN, 1);
+                piblaster.setPwm(GREEN_GPIO_PIN, 0);
+                piblaster.setPwm(BLUE_GPIO_PIN, 0);
+		break;
             case 3:
                 console.log('bleu');
-                gpio.output(11, true);
-                gpio.output(13, false);
-                gpio.output(15, false);
+                piblaster.setPwm(RED_GPIO_PIN, 0);
+                piblaster.setPwm(GREEN_GPIO_PIN, 0);
+                piblaster.setPwm(BLUE_GPIO_PIN, 1);
                 break;
         }
     })
