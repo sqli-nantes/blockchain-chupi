@@ -8,13 +8,11 @@
     "express": "^4.14.0",
     "fs": "0.0.2",
     "my-local-ip": "^1.0.0",
+    "pi-blaster.js": "^0.1.1",
     "q": "^1.4.1",
     "rpi-gpio": "^0.7.0",
     "solc": "^0.4.2",
-    "web3": "^0.17.0-beta",
-    "q": "^1.4.1",
-    "rpi-gpio": "^0.7.0"
-
+    "web3": "^0.17.0-beta"
   },
   "devDependencies": {
     "mocha": "^3.0.2"

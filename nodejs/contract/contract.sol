@@ -1,32 +1,25 @@
 contract RentCar {
-    /* car's availability state */
-     uint state;
-     struct User {
-         address addr;
-         bool valid;
-     }
-     /* car and renter */
-     User public user;
-     User public car;
-     /* rate (price/distance) to calculate price */
+    uint state;
+    struct User {
+        address addr;
+        bool valid;
+    }
+    User public user;
+    User public car;
     uint rate;
     uint price;
     uint overpayment;
-    /* good payment flag */
     bool validatedPaymt;
 
     struct Position{
         uint x;
         uint y;
     }
-    /* bytes abi; */
     Position pos;
 
-    /* events on the change of state, and contract creation */
     event OnStateChanged(uint state);
     event OnCreated(bytes32 indexed identifier);
 
-    /* contructor */
     function RentCar(bytes32 identifier) {
         overpayment = 0;
         validatedPaymt = false;
@@ -44,12 +37,8 @@ contract RentCar {
             _;
     }
 
-    /* first step : the user is identified to the car */
     function RentMe() {
-        /*if (state != 0)
-            throw;*/
         user.addr = msg.sender;
-        /* abi = msg.data; */
         SetState(1);
     }
 
@@ -57,8 +46,6 @@ contract RentCar {
         return addr.balance;
     }
 
-    /* the user is sending the destination coordinates
-       calculate price */
     function GoTo(uint X, uint Y) {
         pos.x = X;
         pos.y = Y;
@@ -68,12 +55,10 @@ contract RentCar {
         }
     }
 
-    /* return price */
     function GetPrice() returns (uint){
         return price;
     }
 
-    /* stop the rent process, return to "1" state */
     function StopRent() onlyUsers() {
         SetState(0);
     }
@@ -83,7 +68,6 @@ contract RentCar {
         OnStateChanged(state);
     }
 
-    /* the user paies the rent and state becomes "2" */
     function StartRent() onlyUsers() {
         if(msg.value >= price){
             if(msg.value!=price){
@@ -125,8 +109,6 @@ contract RentCar {
 	    return ret;
 	  }
 
-    /* user and car must validate the travel in order to do other actions
-    "3" state = waiting the user validation */
     function ValidateTravel() onlyUsers() {
       if  (msg.sender == user.addr && user.valid == false)
           user.valid = true;

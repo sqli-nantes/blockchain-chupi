@@ -30,7 +30,7 @@ var Created = web3.eth.filter({
     fromBlock: createdAtBlock,
     toBlock: 'latest'
 });
-OnCreated();
+//OnCreated();
 
 
 // listen for created log/event
@@ -78,7 +78,8 @@ readSource().then(function() {
                 if (!err) {
                     console.log("Unlocked : ", result);
                     compiled = solc.compile(source, 1);
-
+	
+			console.log(compiled);
                     initContract();
                 }
             });
@@ -120,7 +121,12 @@ function initContract() {
         contract = contractBase.new(identifier, {
             from: web3.eth.accounts[0],
             data: '0x' + compiled.contracts[contractName].bytecode,
-            gas: gasEstimate + 30000
+            gas: 500000
+        },function(err,contract){
+            if( !err && callbackContract.address !== undefined ){
+                console.log(contract.address);
+                server();
+            }
         });
     }
 }
