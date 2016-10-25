@@ -1,4 +1,4 @@
-# blockchain-xXx-RPI
+# ChuPi
 
 Ce répertoire contient une démonstration complète de la décentralisation d'une location d'un véhicule par la blockchain.
 Pour simuler un véhicule (CHOUPETTE), un Raspberry PI 3 est utilisé ainsi qu'une LED de couleur qui indique l'état du véhicule..
