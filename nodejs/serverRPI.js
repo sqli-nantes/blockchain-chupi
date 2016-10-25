@@ -30,7 +30,7 @@ var Created = web3.eth.filter({
     fromBlock: createdAtBlock,
     toBlock: 'latest'
 });
-//OnCreated();
+OnCreated();
 
 
 // listen for created log/event
@@ -122,11 +122,6 @@ function initContract() {
             from: web3.eth.accounts[0],
             data: '0x' + compiled.contracts[contractName].bytecode,
             gas: 500000
-        },function(err,contract){
-            if( !err && callbackContract.address !== undefined ){
-                console.log(contract.address);
-                server();
-            }
         });
     }
 }

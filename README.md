@@ -28,14 +28,18 @@ CHOUPETTE est composée de 2 parties :
     * des informations complémentaires pour l'évolution (constructeur, maintenance, énergie,...)
 
 #### Ports et adresses (temp)
-* IP: **10.33.44.182**
+* IP: **10.33.44.194**
 * port réseau geth : **30301**
 * port rpc geth : **8547**
 * port serveur HTTP : **8080**
 
 #### Connection à Choupette (SSH)
-* id **ssh pi@10.33.44.182**
+* id **ssh pi@10.33.44.194**
 * mdp **raspberry**
+
+
+### GETH
+Geth est en version 1.3.3 (binaire : geth-ARM-20160105140454-1.3.3-c541b38.tar.bz2)
 
 ### JIM
 
@@ -127,7 +131,7 @@ Enfin, ouvrir le fichier demo/demo.html dans un navigateur
 
 ## TODO LIST
 
-* Résoudre le problème de synchronisation du client Geth du RPI
+* Résoudre le problème de synchronisation du client Geth du RPI ( branches/ vitesse synchronisation )
 * Externaliser la configuration du serverRPI.js dans un fichier
-
+* Trouver une version de Geth qui n'a pas de 
 
