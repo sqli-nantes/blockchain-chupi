@@ -183,8 +183,8 @@ console.log(result.args.state.c[0]);
                 break;
             case 1:
                 console.log('orange');
-                piblaster.setPwm(RED_GPIO_PIN, 255);
-                piblaster.setPwm(GREEN_GPIO_PIN, 0.5);
+                piblaster.setPwm(RED_GPIO_PIN, 1);
+                piblaster.setPwm(GREEN_GPIO_PIN, 0.02);
                 piblaster.setPwm(BLUE_GPIO_PIN, 0);
                 break;
             case 2:
