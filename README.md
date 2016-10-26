@@ -21,31 +21,29 @@ Voici le scénario :
 
 CHOUPETTE est composée de 2 parties :
 
-* Un client Ethereum (Geth) qui permet de communiquer avec le réseau, et d'intéragir avec les contrats et de synchroniser la blockchain,
+* Un client Ethereum (geth-1.4.5-stable-a269a71-linux-amd64) qui permet de communiquer avec le réseau, et d'intéragir avec les contrats et de synchroniser la blockchain,
 * Un serveur HTTP, qui permet d'exposer les informations relatives au service :
     * l'interface du *smart-contract*
     * l'adresse du *smart-contract*
     * des informations complémentaires pour l'évolution (constructeur, maintenance, énergie,...)
 
 #### Ports et adresses (temp)
-* IP: **10.33.44.194**
+* IP: **10.33.44.164**
 * port réseau geth : **30301**
 * port rpc geth : **8547**
 * port serveur HTTP : **8080**
 
 #### Connection à Choupette (SSH)
-* id **ssh pi@10.33.44.194**
+* id **ssh pi@10.33.44.164**
 * mdp **raspberry**
 
 
-### GETH
-Geth est en version 1.3.3 (binaire : geth-ARM-20160105140454-1.3.3-c541b38.tar.bz2)
 
 ### JIM
 
 JIM comporte 3 parties :
 
-* Un client Ethereum (GETH) identique à celui de CHOUPETTE, mais qui en plus sert de mineur dans le réseau *(Le mineur pourrait être n'importe quel autre noeud)*.
+* Un client Ethereum (geth-1.5.0-unstable-android-21-aar) identique à celui de CHOUPETTE, mais qui en plus sert de mineur dans le réseau *(Le mineur pourrait être n'importe quel autre noeud)*.
 * Un serveur HTTP qui expose du API REST pour communiquer entre l'application javascript et le client Ethereum.
 * L'application Javascript qui s'exécute dans le navigateur.
 
@@ -90,9 +88,9 @@ geth --datadir data/ --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0"
 ```
 cd ~/geth
 
-./geth-1.5.0-unstable-599e3c7-linux-arm-7 --datadir ./node/ --networkid "0x64" init genesis.json
+./geth-1.4.5-stable-a269a71-linux-arm-7 --datadir ./node/ --networkid "0x64" init genesis.json
 
-./geth-1.5.0-unstable-599e3c7-linux-arm-7 --datadir ./node --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,miner,net,web3,personal" --rpccorsdomain "*" console
+./geth-1.4.5-stable-a269a71-linux-arm-7 --datadir ./node --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,miner,net,web3,personal" --rpccorsdomain "*" console
 
 [...]
 > personal.newAccount("toto");
