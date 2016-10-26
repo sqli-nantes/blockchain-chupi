@@ -21,7 +21,7 @@ Voici le scénario :
 
 CHOUPETTE est composée de 2 parties :
 
-* Un client Ethereum (geth-1.4.5-stable-a269a71-linux-amd64) qui permet de communiquer avec le réseau, et d'intéragir avec les contrats et de synchroniser la blockchain,
+* Un client Ethereum qui permet de communiquer avec le réseau, et d'intéragir avec les contrats et de synchroniser la blockchain,
 * Un serveur HTTP, qui permet d'exposer les informations relatives au service :
     * l'interface du *smart-contract*
     * l'adresse du *smart-contract*
@@ -43,7 +43,7 @@ CHOUPETTE est composée de 2 parties :
 
 JIM comporte 3 parties :
 
-* Un client Ethereum (geth-1.5.0-unstable-android-21-aar) identique à celui de CHOUPETTE, mais qui en plus sert de mineur dans le réseau *(Le mineur pourrait être n'importe quel autre noeud)*.
+* Un client Ethereum identique à celui de CHOUPETTE, mais qui en plus sert de mineur dans le réseau *(Le mineur pourrait être n'importe quel autre noeud)*.
 * Un serveur HTTP qui expose du API REST pour communiquer entre l'application javascript et le client Ethereum.
 * L'application Javascript qui s'exécute dans le navigateur.
 
