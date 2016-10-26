@@ -90,7 +90,7 @@ cd ~/geth
 
 ./geth-1.4.5-stable-a269a71-linux-arm-7 --datadir ./node/ --networkid "0x64" init genesis.json
 
-./geth-1.4.5-stable-a269a71-linux-arm-7 --datadir ./node --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,miner,net,web3,personal" --rpccorsdomain "*" console
+./geth-1.4.5-stable-a269a71-linux-arm-7 --datadir ./node --networkid "0x64" --port "30301" --rpc --rpcaddr "0.0.0.0" --rpcport "8547" --rpcapi "admin,eth,miner,net,web3,personal" --rpccorsdomain "*" --fast --lightkdf console
 
 [...]
 > personal.newAccount("toto");
