@@ -69,20 +69,12 @@ function OnCreated() {
 
 readSource().then(function() {
     console.log('Source OK');
-    // add two demo nodes (with promise)
-    web3.admin.addPeer("enode://d9b86a2036cb10c0ae7bd299d8218eae27e7006df67208aa375f4341fe1a5610e1616b516c83d849c302a42200e6b3bde688fc39d456668613a5d8345c239d39@10.33.44.219:30301", "enode://4fd325fd92a22ed7ef4cfa40d9645761ff4bac064d31c8a5f22dd3e4684d3e6ba006dc03907de01b4780bb8380b1e148c45a1d196be583f3607d41ede95daddd@10.33.44.219:30302", function(err, result) {
+    // unlock account for set transaction/new contract instance (with promise)
+    web3.personal.unlockAccount(account, pwdAccount, 360, function(err, result) {
         if (!err) {
-            console.log("addPeer : ", result);
-            // unlock account for set transaction/new contract instance (with promise)
-            web3.personal.unlockAccount(account, pwdAccount, 360, function(err, result) {
-                if (!err) {
-                    console.log("Unlocked : ", result);
-                    compiled = solc.compile(source, 1);
-	
-			console.log(compiled);
-                    initContract();
-                }
-            });
+            console.log("Unlocked : ", result);
+            compiled = solc.compile(source, 1);
+            initContract();
         }
     });
 })
