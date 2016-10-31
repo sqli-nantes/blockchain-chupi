@@ -17,11 +17,9 @@ var BLUE_GPIO_PIN = 22;
 var compiled, contract;
 var source = "";
 var pwdAccount = "toto";
-//var pwdAccount = "noeud2";
 
 // Solidity Contract
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
-//web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8546'));
 var account = web3.eth.accounts[0];
 var identifier = '0x16bd7d60bc08217d2e78d09658610a9eb6de22df8b587fdca9e980fafc4ecfcc';
 var createdAtBlock = web3.eth.blockNumber;
@@ -165,6 +163,7 @@ function server() {
     var cont = web3.eth.contract(contract.abi).at(contract.address);
     cont.OnStateChanged().watch(function(error, result) {
 console.log("stateChanged");        
+console.log(error,result);
 console.log(result.args.state.c[0]);
 	switch (result.args.state.c[0]) {
             case 0:
@@ -181,20 +180,23 @@ console.log(result.args.state.c[0]);
                 break;
             case 2:
                 console.log('rouge');
-                var timeTravel = Math.floor((Math.random() * 25000) + 5000);
+                piblaster.setPwm(RED_GPIO_PIN, 1);
+                piblaster.setPwm(GREEN_GPIO_PIN, 0);
+                piblaster.setPwm(BLUE_GPIO_PIN, 0);
+
+
                 setTimeout(function() {
                     console.log("Choupette valide");
+
                     web3.personal.unlockAccount(account, pwdAccount, 60, function(err, result) {
+
                         if (!err) {
                             contract.ValidateTravel.sendTransaction({
                                 from: account
                             });
                         }
                     });
-                }, timeTravel);
-                piblaster.setPwm(RED_GPIO_PIN, 1);
-                piblaster.setPwm(GREEN_GPIO_PIN, 0);
-                piblaster.setPwm(BLUE_GPIO_PIN, 0);
+                }, 5000);
 		break;
             case 3:
                 console.log('bleu');

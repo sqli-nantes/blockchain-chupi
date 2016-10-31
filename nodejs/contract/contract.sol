@@ -1,5 +1,5 @@
 contract RentCar {
-    uint state;
+    uint public state;
     struct User {
         address addr;
         bool valid;
@@ -9,7 +9,7 @@ contract RentCar {
     uint rate;
     uint price;
     uint overpayment;
-    bool validatedPaymt;
+    bool public validatedPaymt;
 
     struct Position{
         uint x;
@@ -32,9 +32,11 @@ contract RentCar {
     }
 
     modifier onlyUsers {
-        if (msg.sender != user.addr && msg.sender != car.addr)
-            throw;
+        if (msg.sender == user.addr || msg.sender == car.addr){
             _;
+        } else {
+            throw;
+	}
     }
 
     function RentMe() {
@@ -68,46 +70,11 @@ contract RentCar {
         OnStateChanged(state);
     }
 
-    function StartRent() onlyUsers() {
-        if(msg.value >= price){
-            if(msg.value!=price){
-             	overpayment = msg.value-price;
-                user.addr.send(overpayment);
-            }
-            validatedPaymt = true;
-            SetState(2);
-        }else{
-        	validatedPaymt = false;
-            throw;
-        }
+    function StartRent() {
+        validatedPaymt = true;
+	SetState(2);
     }
 
-
-    function check() returns(bytes32){
-    	if (validatedPaymt){
-    		if(overpayment==0){
-     			return 'C est ok';
-    		}else{
-    			return uintToBytes(overpayment);
-    		}
-    	}else{
-   			return 'Y a pas assez d argent';
-    	}
-    }
-
-    function uintToBytes(uint v) constant returns (bytes32 ret) {
-	    if (v == 0) {
-	        ret = '0';
-	    }
-	    else {
-	        while (v > 0) {
-	            ret = bytes32(uint(ret) / (2 ** 8));
-	            ret |= bytes32(((v % 10) + 48) * 2 ** (8 * 31));
-	            v /= 10;
-	        }
-	    }
-	    return ret;
-	  }
 
     function ValidateTravel() onlyUsers() {
       if  (msg.sender == user.addr && user.valid == false)
