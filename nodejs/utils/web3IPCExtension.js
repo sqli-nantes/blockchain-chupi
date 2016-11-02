@@ -43,6 +43,20 @@ web3._extend({
     ]
 })
 
+
+web3._extend({
+    property: 'personal',
+    methods: [
+        new web3._extend.Method({
+            name: 'newAccount',
+            call: 'personal_newAccount',
+            params: 1,
+            inputFormatter: [toStringVal],
+            outputFormatter: toStringVal
+        })
+    ]
+})
+
 /*
 web3._extend({
     property: 'personal',
