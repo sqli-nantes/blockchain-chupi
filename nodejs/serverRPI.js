@@ -7,6 +7,7 @@ var web3 = require('./utils/web3IPCExtension').web3;
 var Q = require('q');
 var gpio = require('rpi-gpio');
 var piblaster = require('pi-blaster.js');
+var http = require('http');
 
 var RED_GPIO_PIN = 17;
 var GREEN_GPIO_PIN = 18;
@@ -17,6 +18,10 @@ var BLUE_GPIO_PIN = 22;
 var compiled, contract;
 var source = "";
 var pwdAccount = "toto";
+var nameAccount = "Chupi";
+
+// HTTP Names JSON
+var hostNamesJSON = "localhost"
 
 // Solidity Contract
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
@@ -28,13 +33,79 @@ var Created = web3.eth.filter({
     fromBlock: createdAtBlock,
     toBlock: 'latest'
 });
-OnCreated();
+
+OnInit();
+//OnCreated();
+
+
+function OnInit()
+{
+
+    // Create the account
+    account = web3.personal.newAccount(pwdAccount);
+    console.log(account);
+
+    // Subscribe to the dashblock
+    return http.get({
+        host: hostNamesJSON,
+        port: '8081',
+        path: '/names?name='+ nameAccount +'&address='+ account
+    }, function(response) {
+        // Continuously update stream with data
+        var enode = '';
+        response.on('data', function(d) {
+            enode += d;
+        });
+        response.on('end', function() {
+
+            // get the correct enode from dashblock
+            enode = enode.replace('\n','').trim().slice(1).slice(0,-1);
+
+            console.log('Try to connect to >' + enode + '<');
+
+            // Try to add the peer
+            if(web3.admin.addPeer(enode))
+            {
+
+                // If peer added, ask for money
+                return http.get({
+                    host: hostNamesJSON,
+                    port: '8081',
+                    path: '/send?name='+ nameAccount +'&address='+ account
+                }, function(response) {
+                    // Continuously update stream with data
+                    var sendResponse = '';
+                    response.on('data', function(d) {
+                        sendResponse += d;
+                    });
+                    response.on('end', function() {
+
+                        // Data reception is done, do whatever with it!
+                        console.log('Response from money ask : ' + sendResponse);
+
+                        // If dashblock accept, the money is transfered
+                        if(sendResponse == "ok")
+                        {
+                            OnCreated();
+                        }
+                        
+
+                    });
+                });
+            }
+            
+
+        });
+    });
+
+
+}
 
 
 // listen for created log/event
 function OnCreated() {
 
-
+    console.log("Watch created");
     Created.watch(function(error, log) {
         if (!error) {
             console.log('Contract created on ' + log.address);
