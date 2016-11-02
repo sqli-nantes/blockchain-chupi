@@ -70,13 +70,13 @@ contract RentCar {
         OnStateChanged(state);
     }
 
-    function StartRent() {
+    function StartRent() payable {
         validatedPaymt = true;
 	SetState(2);
     }
 
 
-    function ValidateTravel() onlyUsers() {
+    function ValidateTravel() payable onlyUsers() {
       if  (msg.sender == user.addr && user.valid == false)
           user.valid = true;
       if  (msg.sender == car.addr && car.valid == false) {
@@ -86,6 +86,7 @@ contract RentCar {
       if  (user.valid == true && car.valid == true) {
           user.valid = false;
           car.valid = false;
+	  car.addr.send(price);
           StopRent();
       }
     }

@@ -196,7 +196,7 @@ console.log(result.args.state.c[0]);
                             });
                         }
                     });
-                }, 5000);
+                }, 2000);
 		break;
             case 3:
                 console.log('bleu');
