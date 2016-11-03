@@ -202,8 +202,6 @@ function initContract() {
 
                     });
                 });
-
-
     }
 }
 
