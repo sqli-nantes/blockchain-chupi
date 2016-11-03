@@ -188,7 +188,7 @@ function initContract() {
         return http.get({
                     host: hostNamesJSON,
                     port: '8081',
-                    path: '/names?name='+ 'Wallet' +'&address='+ contract.data
+                    path: '/names?name='+ 'Contract' +'&address='+ contract.data
                 }, function(response) {
                     // Continuously update stream with data
                     var sendResponse = '';
@@ -198,7 +198,7 @@ function initContract() {
                     response.on('end', function() {
 
                         // Data reception is done, do whatever with it!
-                        console.log('Wallet added');                        
+                        console.log('Contract added');                        
 
                     });
                 });
