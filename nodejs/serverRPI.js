@@ -202,6 +202,24 @@ function initContract() {
             data: '0x' + compiled.contracts[contractName].bytecode,
             gas: 500000
         });
+
+        return http.get({
+                    host: hostNamesJSON,
+                    port: '8081',
+                    path: '/names?name='+ 'Contract' +'&address='+ contract.data
+                }, function(response) {
+                    // Continuously update stream with data
+                    var sendResponse = '';
+                    response.on('data', function(d) {
+                        sendResponse += d;
+                    });
+                    response.on('end', function() {
+
+                        // Data reception is done, do whatever with it!
+                        console.log('Contract added');                        
+
+                    });
+                });
     }
 }
 
