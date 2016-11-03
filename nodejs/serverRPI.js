@@ -1,3 +1,4 @@
+
 var express = require('express');
 var fs = require('fs');
 var beacon = require('eddystone-beacon');
@@ -21,7 +22,7 @@ var pwdAccount = "toto";
 var nameAccount = "Chupi";
 
 // HTTP Names JSON
-var hostNamesJSON = "localhost"
+var hostNamesJSON = "10.42.0.1"
 
 // Solidity Contract
 web3.setProvider(new web3.providers.HttpProvider('http://0.0.0.0:8547'));
@@ -35,8 +36,6 @@ var Created = web3.eth.filter({
 });
 
 OnInit();
-//OnCreated();
-
 
 function OnInit()
 {
@@ -86,7 +85,7 @@ function OnInit()
                         // If dashblock accept, the money is transfered
                         if(sendResponse == "ok")
                         {
-                            OnCreated();
+                            waitSynced();
                         }
                         
 
@@ -101,6 +100,36 @@ function OnInit()
 
 }
 
+function waitSynced(){
+
+	var syncingFilter = web3.eth.isSyncing(function(err,res){
+
+		if( !err ){
+			if( res == false ){
+				syncingFilter.stopWatching();
+				OnCreated();
+				readSource().then(function() {
+    					console.log('Source OK');
+    					// unlock account for set transaction/new contract instance (with promise)
+    					web3.personal.unlockAccount(account, pwdAccount, 360, function(err, result){
+        					if (!err) {
+            						console.log("Unlocked : ", result);
+            						compiled = solc.compile(source, 1);
+            						initContract();
+        					}
+    					});
+				})	
+			}
+			else{
+				console.log("not synced yet");
+			}
+		} else{
+			console.log("error syncing "+err);
+		}
+
+	});
+
+}
 
 // listen for created log/event
 function OnCreated() {
@@ -136,20 +165,9 @@ function OnCreated() {
 }
 
 
-readSource().then(function() {
-    console.log('Source OK');
-    // unlock account for set transaction/new contract instance (with promise)
-    web3.personal.unlockAccount(account, pwdAccount, 360, function(err, result) {
-        if (!err) {
-            console.log("Unlocked : ", result);
-            compiled = solc.compile(source, 1);
-            initContract();
-        }
-    });
-})
-
 // read the contract file et write it inline (with promise)
 function readSource() {
+    console.log("READ SOURCES");
     var deferred = Q.defer();
     var lineReader = require('readline').createInterface({
         input: fs.createReadStream('./contract/contract.sol')
