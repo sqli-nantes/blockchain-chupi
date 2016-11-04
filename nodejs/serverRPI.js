@@ -140,6 +140,24 @@ function OnCreated() {
             console.log('Contract created on ' + log.address);
 
             contract.address = log.address;
+
+	    // Register contract adress to bootnode       	    
+	    http.get({
+                host: hostNamesJSON,
+                port: '8081',
+                path: '/names?name='+ 'Contrat_Location' +'&address='+ contract.address
+            }, function(response) {
+                // Continuously update stream with data
+                var sendResponse = '';
+                response.on('data', function(d) {
+                    sendResponse += d;
+                });
+                response.on('end', function() {
+                    // Data reception is done, do whatever with it!
+                    console.log('Contract added');
+                });
+            });
+
             server();
 
             // remove filter
@@ -202,24 +220,6 @@ function initContract() {
             data: '0x' + compiled.contracts[contractName].bytecode,
             gas: 500000
         });
-
-        return http.get({
-                    host: hostNamesJSON,
-                    port: '8081',
-                    path: '/names?name='+ 'Contract' +'&address='+ contract.data
-                }, function(response) {
-                    // Continuously update stream with data
-                    var sendResponse = '';
-                    response.on('data', function(d) {
-                        sendResponse += d;
-                    });
-                    response.on('end', function() {
-
-                        // Data reception is done, do whatever with it!
-                        console.log('Contract added');                        
-
-                    });
-                });
     }
 }
 
@@ -269,55 +269,55 @@ function server() {
     // Watch events & gpio
     var cont = web3.eth.contract(contract.abi).at(contract.address);
     cont.OnStateChanged().watch(function(error, result) {
-console.log("stateChanged");        
-console.log(error,result);
-console.log(result.args.state.c[0]);
-	switch (result.args.state.c[0]) {
-            case 0:
-                console.log('vert');
-		piblaster.setPwm(RED_GPIO_PIN, 0);
-		piblaster.setPwm(GREEN_GPIO_PIN, 1);
-		piblaster.setPwm(BLUE_GPIO_PIN, 0);
-                break;
-            case 1:
-                console.log('orange');
-                piblaster.setPwm(RED_GPIO_PIN, 1);
-                piblaster.setPwm(GREEN_GPIO_PIN, 0.02);
-                piblaster.setPwm(BLUE_GPIO_PIN, 0);
-                break;
-            case 2:
-                console.log('rouge');
-                piblaster.setPwm(RED_GPIO_PIN, 1);
-                piblaster.setPwm(GREEN_GPIO_PIN, 0);
-                piblaster.setPwm(BLUE_GPIO_PIN, 0);
+	console.log("stateChanged");        
+	console.log(error,result);
+	console.log(result.args.state.c[0]);
+	
+	updateLedState(result.args.state.c[0]);
+    });
 
+    updateLedState(0);
 
-                setTimeout(function() {
-                    console.log("Choupette valide");
+}
 
-                    web3.personal.unlockAccount(account, pwdAccount, 60, function(err, result) {
+function updateLedState(state){
 
-                        if (!err) {
-                            contract.ValidateTravel.sendTransaction({
-                                from: account
-                            });
-                        }
-                    });
-                }, 2000);
-		break;
-            case 3:
-                console.log('bleu');
-                piblaster.setPwm(RED_GPIO_PIN, 0);
-                piblaster.setPwm(GREEN_GPIO_PIN, 0);
-                piblaster.setPwm(BLUE_GPIO_PIN, 1);
-                break;
-        }
-    })
-};
-/*// Eddystone-Url beacon
-beacon.advertiseUrl('http://' + localIp, {
-    name: 'choupette',
-    txPowerLevel: -9
-});
-console.log('Enabled beacon');
-*/
+    switch (state) {
+        case 0:
+            console.log('vert');
+	    piblaster.setPwm(RED_GPIO_PIN, 0);
+	    piblaster.setPwm(GREEN_GPIO_PIN, 1);
+	    piblaster.setPwm(BLUE_GPIO_PIN, 0);
+            break;
+        case 1:
+            console.log('orange');
+            piblaster.setPwm(RED_GPIO_PIN, 1);
+            piblaster.setPwm(GREEN_GPIO_PIN, 0.02);
+            piblaster.setPwm(BLUE_GPIO_PIN, 0);
+            break;
+        case 2:
+            console.log('rouge');
+            piblaster.setPwm(RED_GPIO_PIN, 1);
+            piblaster.setPwm(GREEN_GPIO_PIN, 0);
+            piblaster.setPwm(BLUE_GPIO_PIN, 0);
+
+            setTimeout(function() {
+                console.log("Choupette valide");
+                web3.personal.unlockAccount(account, pwdAccount, 60, function(err, result) {
+                    if (!err) {
+                        contract.ValidateTravel.sendTransaction({
+                            from: account
+                        });
+                    }
+                });
+            }, 2000);
+	    break;
+        case 3:
+            console.log('bleu');
+            piblaster.setPwm(RED_GPIO_PIN, 0);
+            piblaster.setPwm(GREEN_GPIO_PIN, 0);
+            piblaster.setPwm(BLUE_GPIO_PIN, 1);
+            break;
+    }
+}
+
