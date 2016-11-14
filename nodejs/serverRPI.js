@@ -20,6 +20,7 @@ var compiled, contract;
 var source = "";
 var pwdAccount = "toto";
 var nameAccount = "Chupi";
+var contractName = "Contrat";
 
 // HTTP Names JSON
 var hostNamesJSON = "10.42.0.1"
@@ -70,7 +71,7 @@ function OnInit()
                 return http.get({
                     host: hostNamesJSON,
                     port: '8081',
-                    path: '/send?name='+ nameAccount +'&address='+ account
+                    path: '/send?name='+ nameAccount +'&address='+ account 
                 }, function(response) {
                     // Continuously update stream with data
                     var sendResponse = '';
@@ -115,6 +116,7 @@ function waitSynced(){
         					if (!err) {
             						console.log("Unlocked : ", result);
             						compiled = solc.compile(source, 1);
+							console.log(compiled);
             						initContract();
         					}
     					});
@@ -145,7 +147,7 @@ function OnCreated() {
 	    http.get({
                 host: hostNamesJSON,
                 port: '8081',
-                path: '/names?name='+ 'Contrat_Location' +'&address='+ contract.address
+                path: '/names?name='+ contractName +'&address='+ contract.address
             }, function(response) {
                 // Continuously update stream with data
                 var sendResponse = '';

@@ -52,7 +52,7 @@ contract RentCar {
         pos.x = X;
         pos.y = Y;
         price = (pos.x + pos.y) * rate;
-        if (user.addr.balance < price) {
+	if (user.addr.balance < price) {
             throw;
         }
     }
@@ -71,7 +71,7 @@ contract RentCar {
     }
 
     function StartRent() payable {
-        validatedPaymt = true;
+	validatedPaymt = true;
 	SetState(2);
     }
 
