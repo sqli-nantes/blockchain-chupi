@@ -23,7 +23,7 @@ contract RentCar {
     function RentCar(bytes32 identifier) {
         overpayment = 0;
         validatedPaymt = false;
-        rate = 20;
+        rate = 20 ;
         car.addr = msg.sender;
         user.valid = false;
         car.valid = false;
@@ -52,6 +52,7 @@ contract RentCar {
         pos.x = X;
         pos.y = Y;
         price = (pos.x + pos.y) * rate;
+        price = price * 1000000000000000;
 	if (user.addr.balance < price) {
             throw;
         }
