@@ -52,7 +52,7 @@ contract RentCar {
         pos.x = X;
         pos.y = Y;
         price = (pos.x + pos.y) * rate;
-        price = price * 1000000000000000;
+        price = price * 10000000000000000;
 	if (user.addr.balance < price) {
             throw;
         }
