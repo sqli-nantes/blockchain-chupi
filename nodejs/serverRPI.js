@@ -14,6 +14,7 @@ var RED_GPIO_PIN = 17;
 var GREEN_GPIO_PIN = 18;
 var BLUE_GPIO_PIN = 22;
 
+var syncingCounter = 0;
 
 // params
 var compiled, contract;
@@ -37,6 +38,18 @@ var Created = web3.eth.filter({
 });
 
 OnInit();
+
+
+
+
+
+
+
+
+
+
+
+
 
 function OnInit()
 {
@@ -110,7 +123,7 @@ function waitSynced(){
 				syncingFilter.stopWatching();
 				OnCreated();
 				readSource().then(function() {
-    					console.log('Source OK');
+    					console.log('\nSource OK');
     					// unlock account for set transaction/new contract instance (with promise)
     					web3.personal.unlockAccount(account, pwdAccount, 360, function(err, result){
         					if (!err) {
@@ -123,7 +136,14 @@ function waitSynced(){
 				})	
 			}
 			else{
-				console.log("not synced yet");
+				if(syncingCounter>=4) syncingCounter = 0;
+				process.stdout.write("                 \r");
+				process.stdout.write("\rNot synced yet");
+				for(var i=0;i<4;i++)
+					process.stdout.write((i<syncingCounter) ? "." : " ");
+				syncingCounter = syncingCounter + 1;
+
+				//console.log("not synced yet");
 			}
 		} else{
 			console.log("error syncing "+err);
@@ -140,8 +160,11 @@ function OnCreated() {
     Created.watch(function(error, log) {
         if (!error) {
             console.log('Contract created on ' + log.address);
+		//console.log(log);
 
             contract.address = log.address;
+
+	    console.log("Try to contact : " + '/names?name='+ contractName +'&address='+ contract.address);
 
 	    // Register contract adress to bootnode       	    
 	    http.get({
@@ -180,7 +203,9 @@ function OnCreated() {
                     }
                 }
             });
-        }
+        }else{
+		console.log(error);
+	}
     });
 }
 
@@ -222,6 +247,9 @@ function initContract() {
             data: '0x' + compiled.contracts[contractName].bytecode,
             gas: 500000
         });
+	console.log("contract created, pushing on the node");
+
+	//var contractOnCreatedEvent = contract.OnCreated({},{fromBlock:createdAtBlock,to:'latest'},function(error,result){console.log("TTTTTEEEEEESSSSSSSSSTTTTTTTT")});
     }
 }
 
@@ -262,6 +290,7 @@ function server() {
         res.status(404).send('Page introuvable')
     });
 
+	console.log("Listening on 8080");
     app.listen(8080);
 
     app.on('connection', function() {
