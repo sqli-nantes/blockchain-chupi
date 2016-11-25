@@ -166,11 +166,11 @@ function ContractCreatedCallback(error, log)
 {
 	if (!error) {
 
-		if(!log.address)
-		{
-			console.log(log.transactionHash);
-			return;
-		}
+	if(!log.address)
+	{
+		console.log("No address, tx hash : " + log.transactionHash);
+		return;
+	}
 
             console.log('Contract created on ' + log.address);
 		//console.log(log);
@@ -199,7 +199,7 @@ function ContractCreatedCallback(error, log)
             server();
 
             // remove filter
-            Created.stopWatching();
+            //Created.stopWatching();
 
             // watch for the last next 12 blocks if the code is still at the address
             var filter = web3.eth.filter('latest');
@@ -242,12 +242,12 @@ function readSource() {
 function initContract() {
     console.log('Compiled');
 
-    for (var contractName in compiled.contracts) {
+    for (var _contractName in compiled.contracts) {
         console.log('account : ', account);
-        var contractBase = web3.eth.contract(JSON.parse(compiled.contracts[contractName].interface));
+        var contractBase = web3.eth.contract(JSON.parse(compiled.contracts[_contractName].interface));
         // estimate gas
         contractData = contractBase.new.getData({
-            data: '0x' + compiled.contracts[contractName].bytecode
+            data: '0x' + compiled.contracts[_contractName].bytecode
         });
         var gasEstimate = web3.eth.estimateGas({
             data: contractData
@@ -256,7 +256,7 @@ function initContract() {
         // init contract
         contract = contractBase.new(identifier, {
             from: web3.eth.accounts[0],
-            data: '0x' + compiled.contracts[contractName].bytecode,
+            data: '0x' + compiled.contracts[_contractName].bytecode,
             gas: 500000
         },ContractCreatedCallback);
 	console.log("contract created, pushing on the node");
