@@ -165,6 +165,13 @@ function OnCreated() {
 function ContractCreatedCallback(error, log)
 {
 	if (!error) {
+
+		if(!log.address)
+		{
+			console.log(log.transactionHash);
+			return;
+		}
+
             console.log('Contract created on ' + log.address);
 		//console.log(log);
 
