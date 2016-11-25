@@ -23,7 +23,7 @@ contract RentCar {
     function RentCar(bytes32 identifier) {
         overpayment = 0;
         validatedPaymt = false;
-        rate = 20;
+        rate = 20 ether;
         car.addr = msg.sender;
         user.valid = false;
         car.valid = false;

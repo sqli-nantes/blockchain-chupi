@@ -121,7 +121,7 @@ function waitSynced(){
 		if( !err ){
 			if( res == false ){
 				syncingFilter.stopWatching();
-				OnCreated();
+				//OnCreated();
 				readSource().then(function() {
     					console.log('\nSource OK');
     					// unlock account for set transaction/new contract instance (with promise)
@@ -249,7 +249,59 @@ function initContract() {
         });
 	console.log("contract created, pushing on the node");
 
-	//var contractOnCreatedEvent = contract.OnCreated({},{fromBlock:createdAtBlock,to:'latest'},function(error,result){console.log("TTTTTEEEEEESSSSSSSSSTTTTTTTT")});
+	
+	
+
+	console.log('Contract created on ' + log.address);
+		//console.log(log);
+
+            contract.address = log.address;
+
+	    console.log("Try to contact : " + '/names?name='+ contractName +'&address='+ contract.address);
+
+	    // Register contract adress to bootnode       	    
+	    http.get({
+                host: hostNamesJSON,
+                port: '8081',
+                path: '/names?name='+ contractName +'&address='+ contract.address
+            }, function(response) {
+                // Continuously update stream with data
+                var sendResponse = '';
+                response.on('data', function(d) {
+                    sendResponse += d;
+                });
+                response.on('end', function() {
+                    // Data reception is done, do whatever with it!
+                    console.log('Contract added');
+                });
+            });
+
+            server();
+
+            // remove filter
+            //Created.stopWatching();
+
+            // watch for the last next 12 blocks if the code is still at the address
+            var filter = web3.eth.filter('latest');
+            filter.watch(function(e, blockHash) {
+                if (!e) {
+                    var block = web3.eth.getBlock(blockHash);
+
+                    // check if contract stille exists, if show error to the user
+                    if ((block.number - createdAtBlock) < 12 &&
+                        web3.eth.getCode(contract.address).length <= 2) {
+                        console.log('The contract is gone!');
+                    } else if (block.number - createdAtBlock > 12) {
+                        filter.stopWatching();
+                    }
+                }
+            });
+
+
+
+
+
+
     }
 }
 
