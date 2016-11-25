@@ -252,10 +252,8 @@ function initContract() {
 	
 	
 
-	console.log('Contract created on ' + log.address);
+	console.log('Contract created on ' + contract.address);
 		//console.log(log);
-
-            contract.address = log.address;
 
 	    console.log("Try to contact : " + '/names?name='+ contractName +'&address='+ contract.address);
 
